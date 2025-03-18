@@ -37,10 +37,20 @@ export class StepperComponent {
 
   constructor(private employeeService: EmployeeService) {}
 
-  isFirstStepValid = false;
+  isStep1Valid = false;
+  isStep2Valid = false;
+  isStep3Valid = false;
+  
+  onStep1ValidationChange(isValid: boolean): void {
+    this.isStep1Valid = isValid;
+  }
 
-  onFormStatusChange(isValid: boolean): void {
-    this.isFirstStepValid = isValid;
+  onStep2ValidationChange(isValid: boolean): void {
+    this.isStep2Valid = isValid;
+  }
+
+  onStep3ValidationChange(isValid: boolean): void {
+    this.isStep3Valid = isValid;
   }
 
   submitForm(formData: any): void {

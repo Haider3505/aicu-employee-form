@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CountryService } from '../../services/country.service';
 import { CommonModule } from '@angular/common';
@@ -21,6 +21,8 @@ import { ReactiveFormsModule } from '@angular/forms';
   styleUrls: ['./step2-location.component.scss'],
 })
 export class Step2LocationComponent implements OnInit {
+  @Output() formStatusChange = new EventEmitter<boolean>();
+
   locationForm!: FormGroup;
   regions: string[] = [];
   subregions: string[] = [];
@@ -47,6 +49,10 @@ export class Step2LocationComponent implements OnInit {
         this.subregions = data;
         this.locationForm.get('subregion')?.setValue('');
       });
+    });
+
+    this.locationForm.statusChanges.subscribe(() => {
+      this.formStatusChange.emit(this.locationForm.valid);
     });
   }
 }

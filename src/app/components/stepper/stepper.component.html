@@ -1,19 +1,25 @@
-<mat-horizontal-stepper>
-  <mat-step label="Personal Details">
-    <app-step1-personal></app-step1-personal>
-    <button mat-button matStepperNext>Next</button>
+<mat-horizontal-stepper [linear]="true">
+  <mat-step label="Personal Details" [completed]="isStep1Valid">
+    <app-step1-personal
+      (formStatusChange)="onStep1ValidationChange($event)"
+    ></app-step1-personal>
+    <button mat-button matStepperNext [disabled]="!isStep1Valid">Next</button>
   </mat-step>
 
-  <mat-step label="Location">
-    <app-step2-location></app-step2-location>
+  <mat-step label="Location" [completed]="isStep2Valid">
+    <app-step2-location
+      (formStatusChange)="onStep2ValidationChange($event)"
+    ></app-step2-location>
     <button mat-button matStepperPrevious>Back</button>
-    <button mat-button matStepperNext>Next</button>
+    <button mat-button matStepperNext [disabled]="!isStep2Valid">Next</button>
   </mat-step>
 
-  <mat-step label="Languages">
-    <app-step3-languages></app-step3-languages>
+  <mat-step label="Languages" [completed]="isStep3Valid">
+    <app-step3-languages
+      (formStatusChange)="onStep3ValidationChange($event)"
+    ></app-step3-languages>
     <button mat-button matStepperPrevious>Back</button>
-    <button mat-button matStepperNext>Next</button>
+    <button mat-button matStepperNext [disabled]="!isStep3Valid">Next</button>
   </mat-step>
 
   <mat-step label="Preview & Submit">
