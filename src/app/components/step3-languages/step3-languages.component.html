@@ -1,1 +1,19 @@
-<p>step3-languages works!</p>
+<form [formGroup]="languagesForm">
+  <div formArrayName="languages">
+    <div
+      *ngFor="let language of languages.controls; let i = index"
+      [formGroupName]="i"
+    >
+      <mat-form-field appearance="outline">
+        <mat-label>Language {{ i + 1 }}</mat-label>
+        <input matInput formControlName="language" />
+      </mat-form-field>
+      <button mat-button color="warn" (click)="removeLanguage(i)">
+        Remove
+      </button>
+    </div>
+  </div>
+  <button mat-button color="primary" (click)="addLanguage()">
+    Add Language
+  </button>
+</form>

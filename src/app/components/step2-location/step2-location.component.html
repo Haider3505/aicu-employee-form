@@ -1,1 +1,21 @@
-<p>step2-location works!</p>
+<form [formGroup]="locationForm">
+  <!-- Region Dropdown -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Region</mat-label>
+    <mat-select formControlName="region">
+      <mat-option *ngFor="let region of regions" [value]="region">{{
+        region
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Subregion Dropdown -->
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Subregion</mat-label>
+    <mat-select formControlName="subregion" [disabled]="!subregions.length">
+      <mat-option *ngFor="let subregion of subregions" [value]="subregion">{{
+        subregion
+      }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</form>

@@ -1,1 +1,11 @@
-<p>step4-preview works!</p>
+<div *ngIf="formData">
+  <h3>Preview:</h3>
+  <p><strong>First Name:</strong> {{ formData.firstName }}</p>
+  <p><strong>Family Name:</strong> {{ formData.familyName }}</p>
+  <p><strong>Region:</strong> {{ formData.region }}</p>
+  <p><strong>Subregion:</strong> {{ formData.subregion }}</p>
+  <p><strong>Languages:</strong></p>
+  <ul>
+    <li *ngFor="let lang of formData.languages">{{ lang.language }}</li>
+  </ul>
+</div>

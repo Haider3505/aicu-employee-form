@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-step4-preview',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './step4-preview.component.html',
-  styleUrl: './step4-preview.component.scss'
 })
 export class Step4PreviewComponent {
-
+  @Input() formData!: any;
 }

@@ -1,1 +1,11 @@
-<p>step1-personal works!</p>
+<form [formGroup]="personalForm">
+  <mat-form-field appearance="outline">
+    <mat-label>First Name</mat-label>
+    <input matInput formControlName="firstName" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Family Name</mat-label>
+    <input matInput formControlName="familyName" />
+  </mat-form-field>
+</form>

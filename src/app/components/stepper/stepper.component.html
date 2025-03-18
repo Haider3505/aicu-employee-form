@@ -1,1 +1,24 @@
-<p>stepper works!</p>
+<mat-horizontal-stepper>
+  <mat-step label="Personal Details">
+    <app-step1-personal></app-step1-personal>
+    <button mat-button matStepperNext>Next</button>
+  </mat-step>
+
+  <mat-step label="Location">
+    <app-step2-location></app-step2-location>
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button matStepperNext>Next</button>
+  </mat-step>
+
+  <mat-step label="Languages">
+    <app-step3-languages></app-step3-languages>
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button matStepperNext>Next</button>
+  </mat-step>
+
+  <mat-step label="Preview & Submit">
+    <app-step4-preview></app-step4-preview>
+    <button mat-button matStepperPrevious>Back</button>
+    <button mat-button (click)="submitForm(formData)">Submit</button>
+  </mat-step>
+</mat-horizontal-stepper>
