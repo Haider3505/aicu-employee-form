@@ -1,40 +1,37 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { BaseFormComponent } from '../../shared/base-form/base-form.component';
+import { FormStateService } from '../../services/form-state.service';
+import { COMMON_IMPORTS } from '../../shared/material-imports';
 
 @Component({
   selector: 'app-step1-personal',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    ReactiveFormsModule,
-  ],
+  imports: [...COMMON_IMPORTS],
   templateUrl: './step1-personal.component.html',
   styleUrls: ['./step1-personal.component.scss'],
 })
-export class Step1PersonalComponent {
-  personalForm: FormGroup;
+export class Step1PersonalComponent
+  extends BaseFormComponent
+  implements OnInit
+{
+  constructor(
+    private fb: FormBuilder,
+    private formStateService: FormStateService
+  ) {
+    super();
+  }
 
-  @Output() formStatusChange = new EventEmitter<boolean>();
-
-  constructor(private fb: FormBuilder) {
-    this.personalForm = this.fb.group({
+  ngOnInit(): void {
+    this.form = this.fb.group({
       firstName: ['', Validators.required],
       familyName: ['', Validators.required],
     });
 
-    // Emit the form status on form value changes
-    this.personalForm.statusChanges.subscribe(() => {
-      this.formStatusChange.emit(this.personalForm.valid);
+    this.emitFormStatus();
+
+    this.form.valueChanges.subscribe((value) => {
+      this.formStateService.updateFormData('personal', value);
     });
   }
 }

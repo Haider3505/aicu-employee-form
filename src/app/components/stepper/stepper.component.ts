@@ -1,29 +1,18 @@
-import { Component } from '@angular/core';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { COMMON_IMPORTS } from '../../shared/material-imports';
 
 import { Step1PersonalComponent } from '../step1-personal/step1-personal.component';
 import { Step2LocationComponent } from '../step2-location/step2-location.component';
 import { Step3LanguagesComponent } from '../step3-languages/step3-languages.component';
 import { Step4PreviewComponent } from '../step4-preview/step4-preview.component';
 import { EmployeeService } from '../../services/employee.service';
+import { FormStateService } from '../../services/form-state.service';
 
 @Component({
   selector: 'app-stepper',
   standalone: true,
   imports: [
-    CommonModule,
-    MatStepperModule,
-    MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    ReactiveFormsModule,
+    ...COMMON_IMPORTS,
     Step1PersonalComponent,
     Step2LocationComponent,
     Step3LanguagesComponent,
@@ -32,15 +21,24 @@ import { EmployeeService } from '../../services/employee.service';
   templateUrl: './stepper.component.html',
   styleUrls: ['./stepper.component.scss'],
 })
-export class StepperComponent {
+export class StepperComponent implements OnInit {
   formData: any = {};
 
-  constructor(private employeeService: EmployeeService) {}
+  constructor(
+    private employeeService: EmployeeService,
+    private formStateService: FormStateService
+  ) {}
+
+  ngOnInit(): void {
+    this.formStateService.getFormData().subscribe((data) => {
+      this.formData = this.flattenFormData(data);
+    });
+  }
 
   isStep1Valid = false;
   isStep2Valid = false;
   isStep3Valid = false;
-  
+
   onStep1ValidationChange(isValid: boolean): void {
     this.isStep1Valid = isValid;
   }
@@ -53,16 +51,31 @@ export class StepperComponent {
     this.isStep3Valid = isValid;
   }
 
-  submitForm(formData: any): void {
-    const combinedData = {
-      firstName: '',
-      familyName: '',
-      region: '',
-      subregion: '',
-      languages: [],
-    }; //replace with actual data
+  flattenFormData(data: any): any {
+    const flatData: any = {};
 
-    this.employeeService.submitEmployeeDetails(formData).subscribe(
+    if (data.personal) {
+      flatData.firstName = data.personal.firstName;
+      flatData.familyName = data.personal.familyName;
+    }
+
+    if (data.location) {
+      flatData.region = data.location.region;
+      flatData.subregion = data.location.subregion;
+    }
+
+    if (data.languages) {
+      flatData.languages = data.languages.languages;
+    }
+
+    return flatData;
+  }
+
+  submitForm(): void {
+    const completeData = this.formStateService.getCompleteFormData();
+    const processedData = this.flattenFormData(completeData);
+
+    this.employeeService.submitEmployeeDetails(processedData).subscribe(
       (response) => {
         console.log('Form submitted successfully:', response);
       },

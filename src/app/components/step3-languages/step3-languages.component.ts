@@ -1,44 +1,44 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import {
-  FormBuilder,
-  FormArray,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormArray, Validators } from '@angular/forms';
+import { BaseFormComponent } from '../../shared/base-form/base-form.component';
+import { FormStateService } from '../../services/form-state.service';
+import { COMMON_IMPORTS } from '../../shared/material-imports';
 
 @Component({
   selector: 'app-step3-languages',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MatInputModule, MatButtonModule],
+  imports: [...COMMON_IMPORTS],
   templateUrl: './step3-languages.component.html',
   styleUrls: ['./step3-languages.component.scss'],
 })
-export class Step3LanguagesComponent {
-  @Output() formStatusChange = new EventEmitter<boolean>();
-
-  languagesForm!: FormGroup;
-
-  constructor(private fb: FormBuilder) {}
+export class Step3LanguagesComponent
+  extends BaseFormComponent
+  implements OnInit
+{
+  constructor(
+    private fb: FormBuilder,
+    private formStateService: FormStateService
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
-    this.languagesForm = this.fb.group({
+    this.form = this.fb.group({
       languages: this.fb.array([this.createLanguageField()]),
     });
 
-    this.languagesForm.statusChanges.subscribe(() => {
-      this.formStatusChange.emit(this.languagesForm.valid);
+    this.emitFormStatus();
+
+    this.form.valueChanges.subscribe((value) => {
+      this.formStateService.updateFormData('languages', value);
     });
   }
 
   get languages(): FormArray {
-    return this.languagesForm.get('languages') as FormArray;
+    return this.form.get('languages') as FormArray;
   }
 
-  createLanguageField(): FormGroup {
+  createLanguageField() {
     return this.fb.group({
       language: ['', Validators.required],
     });

@@ -1,39 +1,34 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { FormStateService } from '../../services/form-state.service';
 import { CountryService } from '../../services/country.service';
-import { CommonModule } from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
+import { BaseFormComponent } from '../../shared/base-form/base-form.component';
+import { COMMON_IMPORTS } from '../../shared/material-imports';
 
 @Component({
   selector: 'app-step2-location',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-  ],
+  imports: [...COMMON_IMPORTS],
   templateUrl: './step2-location.component.html',
   styleUrls: ['./step2-location.component.scss'],
 })
-export class Step2LocationComponent implements OnInit {
-  @Output() formStatusChange = new EventEmitter<boolean>();
-
-  locationForm!: FormGroup;
+export class Step2LocationComponent
+  extends BaseFormComponent
+  implements OnInit
+{
   regions: string[] = [];
   subregions: string[] = [];
 
   constructor(
     private fb: FormBuilder,
-    private countryService: CountryService
-  ) {}
+    private countryService: CountryService,
+    private formStateService: FormStateService
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
-    this.locationForm = this.fb.group({
+    this.form = this.fb.group({
       region: ['', Validators.required],
       subregion: ['', Validators.required],
     });
@@ -44,15 +39,17 @@ export class Step2LocationComponent implements OnInit {
     });
 
     // Listen to region selection change
-    this.locationForm.get('region')?.valueChanges.subscribe((region) => {
+    this.form.get('region')?.valueChanges.subscribe((region) => {
       this.countryService.getSubregions(region).subscribe((data) => {
         this.subregions = data;
-        this.locationForm.get('subregion')?.setValue('');
+        this.form.get('subregion')?.setValue('');
       });
     });
 
-    this.locationForm.statusChanges.subscribe(() => {
-      this.formStatusChange.emit(this.locationForm.valid);
+    this.emitFormStatus();
+
+    this.form.valueChanges.subscribe((value) => {
+      this.formStateService.updateFormData('location', value);
     });
   }
 }
