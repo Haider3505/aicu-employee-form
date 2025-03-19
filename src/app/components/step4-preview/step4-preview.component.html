@@ -1,11 +1,73 @@
-<div *ngIf="formData">
-  <h3>Preview:</h3>
-  <p><strong>First Name:</strong> {{ formData.firstName }}</p>
-  <p><strong>Family Name:</strong> {{ formData.familyName }}</p>
-  <p><strong>Region:</strong> {{ formData.region }}</p>
-  <p><strong>Subregion:</strong> {{ formData.subregion }}</p>
-  <p><strong>Languages:</strong></p>
-  <ul>
-    <li *ngFor="let lang of formData.languages">{{ lang.language }}</li>
-  </ul>
+<div *ngIf="formData" class="preview-container">
+  <!-- Personal Information Section -->
+  <div class="preview-card">
+    <div class="preview-header">
+      <div class="preview-icon">
+        <mat-icon>person</mat-icon>
+      </div>
+      <div class="preview-title">Personal Information</div>
+    </div>
+    <div class="preview-content">
+      <div class="preview-info">
+        <div class="preview-label">First Name</div>
+        <div class="preview-value">
+          {{ formData.firstName || "Not provided" }}
+        </div>
+      </div>
+      <div class="preview-info">
+        <div class="preview-label">Family Name</div>
+        <div class="preview-value">
+          {{ formData.familyName || "Not provided" }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Section -->
+  <div class="preview-card">
+    <div class="preview-header">
+      <div class="preview-icon">
+        <mat-icon>location_on</mat-icon>
+      </div>
+      <div class="preview-title">Location</div>
+    </div>
+    <div class="preview-content">
+      <div class="preview-info">
+        <div class="preview-label">Region</div>
+        <div class="preview-value">{{ formData.region || "Not provided" }}</div>
+      </div>
+      <div class="preview-info">
+        <div class="preview-label">Subregion</div>
+        <div class="preview-value">
+          {{ formData.subregion || "Not provided" }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Languages Section -->
+  <div class="preview-card">
+    <div class="preview-header">
+      <div class="preview-icon">
+        <mat-icon>translate</mat-icon>
+      </div>
+      <div class="preview-title">Languages</div>
+    </div>
+    <div class="preview-content">
+      <div
+        *ngIf="
+          formData.languages && formData.languages.length > 0;
+          else noLanguages
+        "
+        class="preview-chips"
+      >
+        <span *ngFor="let lang of formData.languages" class="preview-chip">
+          {{ lang.language }}
+        </span>
+      </div>
+      <ng-template #noLanguages>
+        <div class="preview-empty">No languages provided</div>
+      </ng-template>
+    </div>
+  </div>
 </div>

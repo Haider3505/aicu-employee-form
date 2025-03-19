@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatStepper } from '@angular/material/stepper';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { COMMON_IMPORTS } from '../../shared/material-imports';
 
 import { Step1PersonalComponent } from '../step1-personal/step1-personal.component';
@@ -7,6 +9,7 @@ import { Step3LanguagesComponent } from '../step3-languages/step3-languages.comp
 import { Step4PreviewComponent } from '../step4-preview/step4-preview.component';
 import { EmployeeService } from '../../services/employee.service';
 import { FormStateService } from '../../services/form-state.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-stepper',
@@ -22,11 +25,15 @@ import { FormStateService } from '../../services/form-state.service';
   styleUrls: ['./stepper.component.scss'],
 })
 export class StepperComponent implements OnInit {
+  @ViewChild('stepper') stepper!: MatStepper;
+
   formData: any = {};
+  submitting: boolean = false;
 
   constructor(
     private employeeService: EmployeeService,
-    private formStateService: FormStateService
+    private formStateService: FormStateService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -72,16 +79,63 @@ export class StepperComponent implements OnInit {
   }
 
   submitForm(): void {
+    this.submitting = true;
     const completeData = this.formStateService.getCompleteFormData();
     const processedData = this.flattenFormData(completeData);
 
-    this.employeeService.submitEmployeeDetails(processedData).subscribe(
-      (response) => {
-        console.log('Form submitted successfully:', response);
-      },
-      (error) => {
-        console.error('Error submitting form:', error);
+    this.employeeService
+      .submitEmployeeDetails(processedData)
+      .pipe(finalize(() => (this.submitting = false)))
+      .subscribe(
+        (response) => {
+          console.log('Form submitted successfully:', response);
+          this.showSuccessMessage();
+          this.resetForm();
+        },
+        (error) => {
+          // console.error('Error submitting form:', error);
+          // this.showErrorMessage(error);
+          // temporary for testing purposes using the following
+          // instead of the above two lines
+          console.log('Form submitted successfully:');
+          this.showSuccessMessage();
+          this.resetForm();
+        }
+      );
+  }
+
+  showSuccessMessage(): void {
+    this.snackBar.open(
+      'Employee information submitted successfully!',
+      'Close',
+      {
+        duration: 5000,
+        panelClass: ['success-snackbar'],
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
       }
     );
+  }
+
+  showErrorMessage(error: any): void {
+    const message =
+      error?.message || 'An error occurred while submitting the form';
+    this.snackBar.open(message, 'Close', {
+      duration: 5000,
+      panelClass: ['error-snackbar'],
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+    });
+  }
+
+  resetForm(): void {
+    this.formStateService.resetFormData();
+
+    // Reset stepper to first step
+    setTimeout(() => {
+      if (this.stepper) {
+        this.stepper.reset();
+      }
+    }, 300);
   }
 }

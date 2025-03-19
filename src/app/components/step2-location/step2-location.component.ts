@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { FormStateService } from '../../services/form-state.service';
 import { CountryService } from '../../services/country.service';
 import { BaseFormComponent } from '../../shared/base-form/base-form.component';
 import { COMMON_IMPORTS } from '../../shared/material-imports';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-step2-location',
@@ -14,8 +15,11 @@ import { COMMON_IMPORTS } from '../../shared/material-imports';
 })
 export class Step2LocationComponent
   extends BaseFormComponent
-  implements OnInit
+  implements OnInit, OnDestroy
 {
+  private formSubscription: Subscription = new Subscription();
+  private formStateSubscription: Subscription = new Subscription();
+
   regions: string[] = [];
   subregions: string[] = [];
 
@@ -28,6 +32,30 @@ export class Step2LocationComponent
   }
 
   ngOnInit(): void {
+    this.initializeForm();
+
+    //subscribe to the form state to detect resets
+    this.formStateSubscription = this.formStateService
+      .getFormData()
+      .subscribe((data) => {
+        //if form state is reset (empty object), reinitialize the form
+        if (!data.location && Object.keys(data).length === 0) {
+          this.initializeForm();
+        }
+      });
+  }
+  ngOnDestroy(): void {
+    this.formSubscription.unsubscribe();
+    this.formStateSubscription.unsubscribe();
+  }
+
+  private initializeForm(): void {
+    //if form already exists, destroy subscription first
+    if (this.formSubscription) {
+      this.formSubscription.unsubscribe();
+    }
+
+    // Create the form
     this.form = this.fb.group({
       region: ['', Validators.required],
       subregion: ['', Validators.required],
@@ -48,7 +76,7 @@ export class Step2LocationComponent
 
     this.emitFormStatus();
 
-    this.form.valueChanges.subscribe((value) => {
+    this.formSubscription = this.form.valueChanges.subscribe((value) => {
       this.formStateService.updateFormData('location', value);
     });
   }

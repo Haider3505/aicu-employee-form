@@ -1,19 +1,51 @@
 .form-container {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 mat-form-field {
   width: 100%;
-  margin-bottom: 8px;
+  margin-bottom: 1rem;
 }
 
 .button-container {
   display: flex;
   justify-content: space-between;
-  margin-top: 16px;
+  margin-top: 1.5rem;
+  gap: 1rem;
 }
 
 .full-width-button {
   width: 100%;
+  height: 44px;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+::ng-deep {
+  .success-snackbar {
+    background-color: #4caf50;
+    color: white;
+  }
+
+  .error-snackbar {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .mat-snack-bar-container {
+    margin-top: 1rem !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .form-wrapper {
+    max-width: 100%;
+    margin: 0.5rem;
+  }
+
+  .button-container {
+    flex-direction: column;
+  }
 }

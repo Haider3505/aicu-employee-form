@@ -1,17 +1,17 @@
-<h1 class="form-heading">Employee Form</h1>
-<mat-horizontal-stepper [linear]="true">
+<h1 class="form-heading">Employee Information</h1>
+<mat-horizontal-stepper class="stepper-container" [linear]="true" #stepper>
   <!-- Step 1: Personal Details -->
   <mat-step label="Personal Details" [completed]="isStep1Valid">
-    <mat-card class="form-wrapper" appearance="outlined">
+    <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
+        <h2>Personal Information</h2>
         <app-step1-personal
           (formStatusChange)="onStep1ValidationChange($event)"
         ></app-step1-personal>
         <div class="button-container">
           <button
-            class="full-width-button"
+            class="full-width-button next-button"
             mat-flat-button
-            color="primary"
             matStepperNext
             [disabled]="!isStep1Valid"
           >
@@ -24,16 +24,16 @@
 
   <!-- Step 2: Location -->
   <mat-step label="Location" [completed]="isStep2Valid">
-    <mat-card class="form-wrapper" appearance="outlined">
+    <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
+        <h2>Location Details</h2>
         <app-step2-location
           (formStatusChange)="onStep2ValidationChange($event)"
         ></app-step2-location>
         <div class="button-container">
           <button
-            class="full-width-button"
+            class="full-width-button next-button"
             mat-flat-button
-            color="primary"
             matStepperNext
             [disabled]="!isStep2Valid"
           >
@@ -46,16 +46,16 @@
 
   <!-- Step 3: Languages -->
   <mat-step label="Languages" [completed]="isStep3Valid">
-    <mat-card class="form-wrapper" appearance="outlined">
+    <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
+        <h2>Languages</h2>
         <app-step3-languages
           (formStatusChange)="onStep3ValidationChange($event)"
         ></app-step3-languages>
         <div class="button-container">
           <button
-            class="full-width-button"
+            class="full-width-button next-button"
             mat-flat-button
-            color="primary"
             matStepperNext
             [disabled]="!isStep3Valid"
           >
@@ -68,17 +68,18 @@
 
   <!-- Step 4: Preview & Submit -->
   <mat-step label="Preview & Submit">
-    <mat-card class="form-wrapper" appearance="outlined">
+    <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
+        <h2>Review Your Information</h2>
         <app-step4-preview [formData]="formData"></app-step4-preview>
         <div class="button-container">
           <button
-            class="full-width-button"
+            class="full-width-button submit-button"
             mat-flat-button
-            color="primary"
             (click)="submitForm()"
+            [disabled]="submitting"
           >
-            Submit
+            {{ submitting ? "Submitting..." : "Submit" }}
           </button>
         </div>
       </mat-card-content>

@@ -1,19 +1,38 @@
-<form [formGroup]="form">
-  <div formArrayName="languages">
-    <div
-      *ngFor="let language of languages.controls; let i = index"
-      [formGroupName]="i"
+<form [formGroup]="form" class="form-container">
+  <div class="input-row">
+    <mat-form-field appearance="outline" class="language-input">
+      <mat-label>Language</mat-label>
+      <input
+        matInput
+        [formControl]="newLanguageControl"
+        placeholder="Enter a language"
+      />
+      <mat-error *ngIf="newLanguageControl.hasError('required')">
+        Language is required
+      </mat-error>
+    </mat-form-field>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      class="add-button"
+      [disabled]="newLanguageControl.invalid"
+      (click)="addLanguage()"
     >
-      <mat-form-field appearance="outline">
-        <mat-label>Language {{ i + 1 }}</mat-label>
-        <input matInput formControlName="language" />
-      </mat-form-field>
-      <button mat-button color="warn" (click)="removeLanguage(i)">
-        Remove
-      </button>
-    </div>
+      <mat-icon>add</mat-icon> Add
+    </button>
   </div>
-  <button mat-button color="primary" (click)="addLanguage()">
-    Add Language
-  </button>
+
+  <div class="language-chips" *ngIf="languages.controls.length > 0">
+    <mat-chip-set>
+      <mat-chip
+        *ngFor="let language of languages.controls; let i = index"
+        removable="true"
+        (removed)="removeLanguage(i)"
+      >
+        {{ language.get("language")?.value }}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-set>
+  </div>
 </form>

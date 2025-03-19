@@ -1,8 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormArray, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  FormBuilder,
+  FormArray,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { BaseFormComponent } from '../../shared/base-form/base-form.component';
 import { FormStateService } from '../../services/form-state.service';
 import { COMMON_IMPORTS } from '../../shared/material-imports';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-step3-languages',
@@ -13,8 +19,12 @@ import { COMMON_IMPORTS } from '../../shared/material-imports';
 })
 export class Step3LanguagesComponent
   extends BaseFormComponent
-  implements OnInit
+  implements OnInit, OnDestroy
 {
+  private formSubscription: Subscription = new Subscription();
+  private formStateSubscription: Subscription = new Subscription();
+  newLanguageControl = new FormControl('', Validators.required);
+
   constructor(
     private fb: FormBuilder,
     private formStateService: FormStateService
@@ -23,13 +33,38 @@ export class Step3LanguagesComponent
   }
 
   ngOnInit(): void {
+    this.initializeForm();
+
+    // Subscribe to the form state to detect resets
+    this.formStateSubscription = this.formStateService
+      .getFormData()
+      .subscribe((data) => {
+        // If form state is reset (empty object), reinitialize the form
+        if (!data.languages && Object.keys(data).length === 0) {
+          this.initializeForm();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.formSubscription.unsubscribe();
+    this.formStateSubscription.unsubscribe();
+  }
+
+  private initializeForm(): void {
+    // if form already initialized, destroy subscription first
+    if (this.formSubscription) {
+      this.formSubscription.unsubscribe();
+    }
+
+    // Initialize the form with empty language array
     this.form = this.fb.group({
-      languages: this.fb.array([this.createLanguageField()]),
+      languages: this.fb.array([]),
     });
 
     this.emitFormStatus();
 
-    this.form.valueChanges.subscribe((value) => {
+    this.formSubscription = this.form.valueChanges.subscribe((value) => {
       this.formStateService.updateFormData('languages', value);
     });
   }
@@ -38,14 +73,22 @@ export class Step3LanguagesComponent
     return this.form.get('languages') as FormArray;
   }
 
-  createLanguageField() {
+  createLanguageField(value: string) {
     return this.fb.group({
-      language: ['', Validators.required],
+      language: [value, Validators.required],
     });
   }
 
   addLanguage(): void {
-    this.languages.push(this.createLanguageField());
+    if (
+      this.newLanguageControl.valid &&
+      this.newLanguageControl.value?.trim()
+    ) {
+      this.languages.push(
+        this.createLanguageField(this.newLanguageControl.value)
+      );
+      this.newLanguageControl.reset();
+    }
   }
 
   removeLanguage(index: number): void {

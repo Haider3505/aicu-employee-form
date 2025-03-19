@@ -1,21 +1,30 @@
-// Import statements for common Angular Material components
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
 
-// Export an array that can be spread into the imports array of standalone components
 export const COMMON_IMPORTS = [
   CommonModule,
   ReactiveFormsModule,
+  FormsModule,
   MatStepperModule,
   MatButtonModule,
+  MatIconModule,
   MatInputModule,
   MatFormFieldModule,
   MatSelectModule,
   MatCardModule,
+  MatDividerModule,
+  MatSnackBarModule,
+  MatProgressSpinnerModule,
+  MatChipsModule,
 ];

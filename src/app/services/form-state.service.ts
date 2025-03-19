@@ -6,13 +6,13 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class FormStateService {
   private formDataSubject = new BehaviorSubject<any>({});
+  private formData: any = {};
 
-  updateFormData(stepId: string, data: any): void {
-    const currentData = this.formDataSubject.getValue();
-    this.formDataSubject.next({
-      ...currentData,
-      [stepId]: data,
-    });
+  constructor() {}
+
+  updateFormData(step: string, data: any): void {
+    this.formData[step] = data;
+    this.formDataSubject.next(this.formData);
   }
 
   getFormData(): Observable<any> {
@@ -20,6 +20,11 @@ export class FormStateService {
   }
 
   getCompleteFormData(): any {
-    return this.formDataSubject.getValue();
+    return this.formData;
+  }
+
+  resetFormData(): void {
+    this.formData = {};
+    this.formDataSubject.next(this.formData);
   }
 }

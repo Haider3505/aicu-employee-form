@@ -7,6 +7,7 @@ import { COMMON_IMPORTS } from './../../shared/material-imports';
   standalone: true,
   imports: [...COMMON_IMPORTS],
   templateUrl: './step4-preview.component.html',
+  styleUrls: ['./step4-preview.component.scss']
 })
 export class Step4PreviewComponent implements OnInit {
   @Input() formData: any;
@@ -14,9 +15,7 @@ export class Step4PreviewComponent implements OnInit {
   constructor(private formStateService: FormStateService) {}
 
   ngOnInit(): void {
-    // Optional: If you want to directly access the form data from the service
-    this.formStateService.getFormData().subscribe((data) => {
-      // Can be used for additional processing if needed
-    });
+    // this.formStateService.getFormData().subscribe((data) => {
+    // });
   }
 }

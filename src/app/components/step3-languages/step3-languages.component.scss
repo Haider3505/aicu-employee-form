@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-container {
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.input-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.language-input {
+  flex: 1;
+}
+
+.add-button {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+}
+
+mat-chip {
+  margin-bottom: 0.5rem;
+}
+
+::ng-deep .mat-chip-list-wrapper {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
