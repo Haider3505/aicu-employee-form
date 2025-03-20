@@ -1,71 +1,80 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
 import {
   FormBuilder,
   FormArray,
-  Validators,
+  FormGroup,
   FormControl,
+  ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
-import { BaseFormComponent } from '../../shared/base-form/base-form.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
 import { FormStateService } from '../../services/form-state.service';
-import { COMMON_IMPORTS } from '../../shared/material-imports';
-import { Subscription } from 'rxjs';
+import { LanguageInfo } from '../../models/form-data.type';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-step3-languages',
   standalone: true,
-  imports: [...COMMON_IMPORTS],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+  ],
   templateUrl: './step3-languages.component.html',
   styleUrls: ['./step3-languages.component.scss'],
 })
-export class Step3LanguagesComponent
-  extends BaseFormComponent
-  implements OnInit, OnDestroy
-{
-  private formSubscription: Subscription = new Subscription();
-  private formStateSubscription: Subscription = new Subscription();
+export class Step3LanguagesComponent implements OnInit {
+  @Output() formStatusChange = new EventEmitter<boolean>();
+  @Output() formValueChange = new EventEmitter<LanguageInfo[]>();
+
+  form!: FormGroup;
   newLanguageControl = new FormControl('', Validators.required);
 
-  constructor(
-    private fb: FormBuilder,
-    private formStateService: FormStateService
-  ) {
-    super();
-  }
+  private fb = inject(FormBuilder);
+  private formStateService = inject(FormStateService);
 
   ngOnInit(): void {
     this.initializeForm();
 
-    // Subscribe to the form state to detect resets
-    this.formStateSubscription = this.formStateService
-      .getFormData()
-      .subscribe((data) => {
-        // If form state is reset (empty object), reinitialize the form
-        if (!data.languages && Object.keys(data).length === 0) {
-          this.initializeForm();
-        }
+    // Check if form data exists to populate the form
+    const formData = this.formStateService.getCompleteFormData();
+    if (formData.languages && formData.languages.length > 0) {
+      formData.languages.forEach((lang) => {
+        this.languages.push(this.createLanguageField(lang.language));
       });
-  }
+    }
 
-  ngOnDestroy(): void {
-    this.formSubscription.unsubscribe();
-    this.formStateSubscription.unsubscribe();
+    // Listen for reset events
+    this.formStateService.formReset.subscribe(() => {
+      this.form.reset();
+      while (this.languages.length > 0) {
+        this.languages.removeAt(0);
+      }
+    });
   }
 
   private initializeForm(): void {
-    // if form already initialized, destroy subscription first
-    if (this.formSubscription) {
-      this.formSubscription.unsubscribe();
-    }
-
-    // Initialize the form with empty language array
     this.form = this.fb.group({
       languages: this.fb.array([]),
     });
 
-    this.emitFormStatus();
+    // Monitor form status changes
+    this.form.statusChanges.subscribe(() => {
+      this.formStatusChange.emit(this.form.valid);
+    });
 
-    this.formSubscription = this.formValueChange.subscribe((value) => {
-      this.formStateService.updateFormData('languages', value);
+    // Monitor form value changes
+    this.form.valueChanges.subscribe((value) => {
+      this.formValueChange.emit(this.languages.value);
+      this.formStateService.updateFormData('languages', this.languages.value);
     });
   }
 
@@ -88,10 +97,12 @@ export class Step3LanguagesComponent
         this.createLanguageField(this.newLanguageControl.value)
       );
       this.newLanguageControl.reset();
+      this.formValueChange.emit(this.languages.value);
     }
   }
 
   removeLanguage(index: number): void {
     this.languages.removeAt(index);
+    this.formValueChange.emit(this.languages.value);
   }
 }

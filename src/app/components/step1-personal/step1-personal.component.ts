@@ -1,66 +1,65 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
-import { BaseFormComponent } from '../../shared/base-form/base-form.component';
+import { Component, OnInit, Output, EventEmitter, inject } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormStateService } from '../../services/form-state.service';
-import { COMMON_IMPORTS } from '../../shared/material-imports';
-import { Subscription } from 'rxjs';
+import { PersonalInfo } from '../../models/form-data.type';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-step1-personal',
   standalone: true,
-  imports: [...COMMON_IMPORTS],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   templateUrl: './step1-personal.component.html',
   styleUrls: ['./step1-personal.component.scss'],
 })
-export class Step1PersonalComponent
-  extends BaseFormComponent
-  implements OnInit, OnDestroy
-{
-  private formSubscription: Subscription = new Subscription();
-  private formStateSubscription: Subscription = new Subscription();
+export class Step1PersonalComponent implements OnInit {
+  @Output() formStatusChange = new EventEmitter<boolean>();
+  @Output() formValueChange = new EventEmitter<PersonalInfo>();
 
-  constructor(
-    private fb: FormBuilder,
-    private formStateService: FormStateService
-  ) {
-    super();
-  }
+  form!: FormGroup;
+  private fb = inject(FormBuilder);
+  private formStateService = inject(FormStateService);
 
   ngOnInit(): void {
     this.initializeForm();
 
-    // Subscribe to the form state to detect resets
-    this.formStateSubscription = this.formStateService
-      .getFormData()
-      .subscribe((data) => {
-        // If form state is reset (empty object), reinitialize the form
-        if (!data.personal && Object.keys(data).length === 0) {
-          this.initializeForm();
-        }
-      });
-  }
+    // Check if form data exists to populate the form
+    const formData = this.formStateService.getCompleteFormData();
+    if (formData.personal) {
+      this.form.patchValue(formData.personal);
+    }
 
-  ngOnDestroy(): void {
-    this.formSubscription.unsubscribe();
-    this.formStateSubscription.unsubscribe();
+    // Listen for reset events
+    this.formStateService.formReset.subscribe(() => {
+      this.form.reset();
+    });
   }
 
   private initializeForm(): void {
-    // If form already exists, destroy subscription first
-    if (this.formSubscription) {
-      this.formSubscription.unsubscribe();
-    }
-
-    // Create the form
     this.form = this.fb.group({
       firstName: ['', Validators.required],
       familyName: ['', Validators.required],
     });
 
-    this.emitFormStatus();
+    // Monitor form status changes
+    this.form.statusChanges.subscribe(() => {
+      this.formStatusChange.emit(this.form.valid);
+    });
 
-    // Create new subscription
-    this.formSubscription = this.formValueChange.subscribe((value) => {
+    // Monitor form value changes
+    this.form.valueChanges.subscribe((value) => {
+      this.formValueChange.emit(value);
       this.formStateService.updateFormData('personal', value);
     });
   }

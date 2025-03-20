@@ -1,21 +1,21 @@
+<!-- src/app/pages/stepper-page/stepper-page.component.html -->
 <h1 class="form-heading">Employee Information</h1>
 <mat-horizontal-stepper class="stepper-container" [linear]="true" #stepper>
   <!-- Step 1: Personal Details -->
-  <mat-step label="Personal Details" [completed]="isStep1Valid">
+  <mat-step label="Personal Details" [completed]="isStep1Valid()">
     <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
         <h2>Personal Information</h2>
         <app-step1-personal
           (formStatusChange)="onStep1ValidationChange($event)"
+          (formValueChange)="updateFormData()"
         ></app-step1-personal>
-        <!-- need to create a btn component that we can reuse 
-         and that takes two things disabled attrib and a btn text -->
         <div class="button-container">
           <button
             class="full-width-button next-button"
             mat-flat-button
             matStepperNext
-            [disabled]="!isStep1Valid"
+            [disabled]="!isStep1Valid()"
           >
             Next
           </button>
@@ -25,19 +25,20 @@
   </mat-step>
 
   <!-- Step 2: Location -->
-  <mat-step label="Location" [completed]="isStep2Valid">
+  <mat-step label="Location" [completed]="isStep2Valid()">
     <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
         <h2>Location Details</h2>
         <app-step2-location
           (formStatusChange)="onStep2ValidationChange($event)"
+          (formValueChange)="updateFormData()"
         ></app-step2-location>
         <div class="button-container">
           <button
             class="full-width-button next-button"
             mat-flat-button
             matStepperNext
-            [disabled]="!isStep2Valid"
+            [disabled]="!isStep2Valid()"
           >
             Next
           </button>
@@ -47,19 +48,20 @@
   </mat-step>
 
   <!-- Step 3: Languages -->
-  <mat-step label="Languages" [completed]="isStep3Valid">
+  <mat-step label="Languages" [completed]="isStep3Valid()">
     <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
         <h2>Languages</h2>
         <app-step3-languages
           (formStatusChange)="onStep3ValidationChange($event)"
+          (formValueChange)="updateFormData()"
         ></app-step3-languages>
         <div class="button-container">
           <button
             class="full-width-button next-button"
             mat-flat-button
             matStepperNext
-            [disabled]="!isStep3Valid"
+            [disabled]="!isStep3Valid()"
           >
             Next
           </button>
@@ -73,15 +75,15 @@
     <mat-card class="form-wrapper">
       <mat-card-content class="step-content">
         <h2>Review Your Information</h2>
-        <app-step4-preview [formData]="formData"></app-step4-preview>
+        <app-step4-preview [formData]="formData()"></app-step4-preview>
         <div class="button-container">
           <button
             class="full-width-button submit-button"
             mat-flat-button
             (click)="submitForm()"
-            [disabled]="submitting"
+            [disabled]="submitting()"
           >
-            {{ submitting ? "Submitting..." : "Submit" }}
+            {{ submitting() ? "Submitting..." : "Submit" }}
           </button>
         </div>
       </mat-card-content>

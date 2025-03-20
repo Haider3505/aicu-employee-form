@@ -1,30 +1,47 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, signal, EventEmitter } from '@angular/core';
+import {
+  EmployeeFormData,
+  FlattenedEmployeeData,
+} from '../models/form-data.type';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FormStateService {
-  private formDataSubject = new BehaviorSubject<any>({});
-  private formData: any = {};
+  // Using a signal to manage form data
+  private formData = signal<EmployeeFormData>({});
 
-  constructor() {}
+  public formReset = new EventEmitter<void>();
 
-  updateFormData(step: string, data: any): void {
-    this.formData[step] = data;
-    this.formDataSubject.next(this.formData);
+  // Expose the form data as a read-only signal
+  public formData$ = this.formData.asReadonly();
+
+  updateFormData(step: 'personal' | 'location' | 'languages', data: any): void {
+    this.formData.update((currentData) => ({
+      ...currentData,
+      [step]: data,
+    }));
   }
 
-  getFormData(): Observable<any> {
-    return this.formDataSubject.asObservable();
-  }
-
-  getCompleteFormData(): any {
-    return this.formData;
+  getCompleteFormData(): EmployeeFormData {
+    return this.formData();
   }
 
   resetFormData(): void {
-    this.formData = {};
-    this.formDataSubject.next(this.formData);
+    this.formData.set({});
+    // Emit reset event
+    this.formReset.emit();
+  }
+
+  // Helper method to flatten the form data for API submission
+  getFlattenedFormData(): FlattenedEmployeeData {
+    const data = this.formData();
+    return {
+      firstName: data.personal?.firstName || '',
+      familyName: data.personal?.familyName || '',
+      region: data.location?.region || '',
+      subregion: data.location?.subregion || '',
+      languages: data.languages || [],
+    };
   }
 }
