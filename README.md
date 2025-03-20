@@ -1,6 +1,35 @@
-# EmployeeForm
+# Employee Information Form
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.1.
+A multi-step form application built with Angular 19 that collects and manages employee information through a guided process.
+
+## Table of Contents
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [Development Server](#development-server)
+- [Code Scaffolding](#code-scaffolding)
+- [Building](#building)
+- [Running Unit Tests](#running-unit-tests)
+- [Running End-to-End Tests](#running-end-to-end-tests)
+- [Additional Resources](#additional-resources)
+- [License](#license)
+
+## Features
+
+- Multi-step form with validation
+- Reactive forms implementation
+- Dynamic region and subregion selection
+- Language management with add/remove functionality
+- Form state management across steps
+- Preview of collected information before submission
+- Responsive Material Design UI
+
+## Technology Stack
+
+- Angular 19.2.1
+- Angular Material
+- RxJS
+- Standalone Components
+- HTTP Client for API Integration
 
 ## Development server
 
@@ -57,3 +86,6 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.

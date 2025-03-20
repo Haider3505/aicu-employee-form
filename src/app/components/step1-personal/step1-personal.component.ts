@@ -60,7 +60,7 @@ export class Step1PersonalComponent
     this.emitFormStatus();
 
     // Create new subscription
-    this.formSubscription = this.form.valueChanges.subscribe((value) => {
+    this.formSubscription = this.formValueChange.subscribe((value) => {
       this.formStateService.updateFormData('personal', value);
     });
   }

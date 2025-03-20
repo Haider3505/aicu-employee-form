@@ -64,7 +64,7 @@ export class Step3LanguagesComponent
 
     this.emitFormStatus();
 
-    this.formSubscription = this.form.valueChanges.subscribe((value) => {
+    this.formSubscription = this.formValueChange.subscribe((value) => {
       this.formStateService.updateFormData('languages', value);
     });
   }
